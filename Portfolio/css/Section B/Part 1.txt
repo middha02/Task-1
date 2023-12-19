@@ -1,0 +1,73 @@
+#!/bin/bash
+
+# Define the version
+VERSION="v0.1.0"
+
+# Define usage information
+usage() {
+    echo "Usage: internsctl [OPTIONS] COMMAND"
+    echo "Custom Linux command for intern operations."
+    echo
+    echo "Options:"
+    echo "  -h, --help       Show this help message and exit"
+    echo "  -v, --version    Show the version of internsctl"
+    echo
+    echo "Commands:"
+    echo "  cpu getinfo      Display CPU information"
+    echo "  memory getinfo   Display memory information"
+    # Add more commands as needed
+}
+
+# Function to handle version option
+show_version() {
+    echo "internsctl $VERSION"
+}
+
+# Function to display CPU information
+get_cpu_info() {
+    lscpu
+}
+
+# Function to display memory information
+get_memory_info() {
+    free
+}
+
+# Main script logic
+case "$1" in
+    -h|--help)
+        usage
+        ;;
+    -v|--version)
+        show_version
+        ;;
+    cpu)
+        case "$2" in
+            getinfo)
+                get_cpu_info
+                ;;
+            *)
+                echo "Error: Invalid command. Use 'internsctl cpu getinfo'."
+                exit 1
+                ;;
+        esac
+        ;;
+    memory)
+        case "$2" in
+            getinfo)
+                get_memory_info
+                ;;
+            *)
+                echo "Error: Invalid command. Use 'internsctl memory getinfo'."
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        echo "Error: Invalid command. Use 'internsctl --help' for usage."
+        exit 1
+        ;;
+esac
+
+# Exit the script
+exit 0

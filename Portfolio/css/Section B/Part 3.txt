@@ -1,0 +1,100 @@
+#!/bin/bash
+
+# Define the version
+VERSION="v0.1.0"
+
+# Define usage information
+usage() {
+    echo "Usage: internsctl [OPTIONS] COMMAND"
+    echo "Custom Linux command for intern operations."
+    echo
+    echo "Options:"
+    echo "  -h, --help       Show this help message and exit"
+    echo "  -v, --version    Show the version of internsctl"
+    echo
+    echo "Commands:"
+    echo "  cpu getinfo      Display CPU information"
+    echo "  memory getinfo   Display memory information"
+    echo "  user create      Create a new user"
+    echo "  user list        List all regular users"
+    echo "  user list --sudo-only  List users with sudo permissions"
+    echo "  file getinfo     Get information about a file"
+    # Add more commands as needed
+}
+
+# Function to handle version option
+show_version() {
+    echo "internsctl $VERSION"
+}
+
+# Function to get information about a file
+get_file_info() {
+    if [ -z "$2" ]; then
+        echo "Error: Please provide a file name."
+        exit 1
+    fi
+
+    FILE="$2"
+    SIZE=""
+    PERMISSIONS=""
+    OWNER=""
+    LAST_MODIFIED=""
+
+    # Process options
+    while [ "$#" -gt 2 ]; do
+        case "$3" in
+            --size|-s)
+                SIZE=$(stat -c %s "$FILE")
+                ;;
+            --permissions|-p)
+                PERMISSIONS=$(stat -c %A "$FILE")
+                ;;
+            --owner|-o)
+                OWNER=$(stat -c %U "$FILE")
+                ;;
+            --last-modified|-m)
+                LAST_MODIFIED=$(stat -c %y "$FILE")
+                ;;
+            *)
+                echo "Error: Invalid option."
+                exit 1
+                ;;
+        esac
+        shift
+    done
+
+    # Display file information
+    echo "File: $FILE"
+    [ -n "$PERMISSIONS" ] && echo "Permissions: $PERMISSIONS"
+    [ -n "$SIZE" ] && echo "Size(B): $SIZE"
+    [ -n "$OWNER" ] && echo "Owner: $OWNER"
+    [ -n "$LAST_MODIFIED" ] && echo "Last Modified: $LAST_MODIFIED"
+}
+
+# Main script logic
+case "$1" in
+    -h|--help)
+        usage
+        ;;
+    -v|--version)
+        show_version
+        ;;
+    file)
+        case "$2" in
+            getinfo)
+                get_file_info "$@"
+                ;;
+            *)
+                echo "Error: Invalid command. Use 'internsctl file getinfo [options] <file-name>'."
+                exit 1
+                ;;
+        esac
+        ;;
+    *)
+        echo "Error: Invalid command. Use 'internsctl --help' for usage."
+        exit 1
+        ;;
+esac
+
+# Exit the script
+exit 0
